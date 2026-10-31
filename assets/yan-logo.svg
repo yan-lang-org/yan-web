@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Yan 砚">
+  <title>Yan · 砚</title>
+  <!-- 设计说明见同目录 README.md：砚台 = 语言，笔锋 = 写，三道短横 = 被编译的代码，朱砂印 = 落款 -->
+  <rect width="512" height="512" rx="112" fill="#F5F1E6"/>
+
+  <!-- 砚身：圆角方形石台 -->
+  <rect x="64" y="176" width="336" height="264" rx="56" fill="#1A1A1A"/>
+
+  <!-- 墨池：外圈留白 + 内圈墨 -->
+  <circle cx="232" cy="308" r="96" fill="#F5F1E6"/>
+  <circle cx="232" cy="308" r="64" fill="#1A1A1A"/>
+
+  <!-- 笔锋：从墨池扫向右上，末端收锋 -->
+  <path d="M214 384 L332 168 L380 196 L262 412 Z" fill="#1A1A1A"/>
+  <path d="M214 384 L262 412 L232 424 Z" fill="#1A1A1A"/>
+
+  <!-- 三道短横：等宽递减，暗示编译产物（对齐的代码行） -->
+  <rect x="300" y="72"  width="124" height="22" rx="11" fill="#1A1A1A"/>
+  <rect x="324" y="112" width="100" height="22" rx="11" fill="#1A1A1A"/>
+  <rect x="348" y="152" width="76"  height="22" rx="11" fill="#1A1A1A"/>
+
+  <!-- 朱砂印：落款（唯一一处彩色） -->
+  <rect x="352" y="368" width="56" height="56" rx="10" fill="#C8322B"/>
+</svg>

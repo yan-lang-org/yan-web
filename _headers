@@ -1,0 +1,10 @@
+# 站点响应头（放在站点根目录，部署时自动生效）
+#
+# 缓存策略用平台默认值（HTML 立即回源校验）；
+# assets/ 没有文件名指纹，长缓存会让改版不生效，所以这里不设 immutable。
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()

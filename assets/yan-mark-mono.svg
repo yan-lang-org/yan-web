@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Yan mark">
+  <title>Yan · 砚（单色，favicon / 终端用）</title>
+  <!-- 单色版：只有墨色与镂空，适合 16–32px、单色印刷、终端 ASCII art 参考 -->
+  <path fill="#1A1A1A" fill-rule="evenodd" d="
+    M120 176 h224 a56 56 0 0 1 56 56 v152 a56 56 0 0 1 -56 56 h-224 a56 56 0 0 1 -56 -56 v-152 a56 56 0 0 1 56 -56 z
+    M232 212 a96 96 0 1 0 0 192 a96 96 0 1 0 0 -192 z
+    M232 244 a64 64 0 1 1 0 128 a64 64 0 1 1 0 -128 z
+  "/>
+  <path fill="#1A1A1A" d="M214 384 L332 168 L380 196 L262 412 Z"/>
+  <rect x="300" y="72"  width="124" height="22" rx="11" fill="#1A1A1A"/>
+  <rect x="324" y="112" width="100" height="22" rx="11" fill="#1A1A1A"/>
+  <rect x="348" y="152" width="76"  height="22" rx="11" fill="#1A1A1A"/>
+</svg>

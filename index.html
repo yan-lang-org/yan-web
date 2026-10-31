@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>砚 Yan —— 磨墨成言，编译成器</title>
+<meta name="description" content="砚 Yan 是一门编译型、静态强类型的小型通用语言。语法骨架接近 Rust，编译期借用检查、没有 GC，默认直接生成原生 exe，也能输出 C 交给任意 C 编译器。">
+<link rel="canonical" href="https://yan-lang.org/">
+<meta name="theme-color" content="#f5f1e6">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="砚 Yan">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="砚 Yan —— 磨墨成言，编译成器">
+<meta property="og:description" content="编译型、静态强类型的小型通用语言：语法骨架接近 Rust，编译期借用检查，没有 GC；默认直出 Windows x64 的 exe，也能输出 C。">
+<meta property="og:url" content="https://yan-lang.org/">
+<meta property="og:image" content="https://yan-lang.org/assets/yan-logo.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:alt" content="砚 Yan 标识">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="assets/yan-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="#top">
+    <img src="assets/yan-logo.svg" alt="" width="34" height="34">
+    <span>砚 <em>Yan</em></span>
+  </a>
+  <nav>
+    <a href="#features">特点</a>
+    <a href="#start">上手</a>
+    <a href="#bits">按位访问</a>
+    <a href="#status">进度</a>
+    <a class="gh" href="https://github.com/yan-lang-org/yan-lang">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <img class="mark" src="assets/yan-logo.svg" alt="Yan" width="132" height="132">
+    <h1>磨墨成言，编译成器</h1>
+    <p class="lede">
+      Yan 是一门<strong>编译型、静态强类型</strong>的小型通用语言。
+      语法骨架接近 Rust，<strong>借用检查也走 Rust 那一路</strong>（精简版：不做路径敏感分析）——没有 GC；
+      默认<strong>直接生成原生 exe</strong>，也能把 C 打出来交给任意 C 编译器。
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/yan-lang-org/yan-lang/releases">下载</a>
+      <a class="btn" href="https://github.com/yan-lang-org/yan-lang/blob/main/docs/TUTORIAL.md">读教程</a>
+    </div>
+    <p class="ver">v0.11.0 · Windows x64 · 单文件，无运行时依赖</p>
+  </section>
+
+  <section id="features" class="grid">
+    <article>
+      <h3>借用检查，生命周期基本不用写</h3>
+      <p>默认按值传递，要引用就显式写 <code>&amp;</code> / <code>&amp;mut</code>；
+         同一时刻只能有一个 <code>&amp;mut</code>，借用到引用的最后一次使用就结束（NLL），冲突在编译期拦下。
+         <code>'a</code> 只在两种场合要写：struct 存引用、返回引用的来源不唯一。
+         不做路径敏感分析——分支和循环里按「借用还活着」保守处理，会比 Rust 报得多。</p>
+    </article>
+    <article>
+      <h3>一个 <code>comptime</code> 管全部编译期求值</h3>
+      <p>常量、<code>comptime f(..)</code>、<code>comptime if</code> 同族；函数定义处零标记——
+         同一个函数既能编译期用也能运行期用，不用写两份。</p>
+    </article>
+    <article>
+      <h3>条件编译不是预处理</h3>
+      <p><code>comptime if</code> 就是常规语法，未选中分支不生成代码（语句位置连检查都跳过）；
+         表达式位置两支照样过类型检查，死分支不会腐烂。</p>
+    </article>
+    <article>
+      <h3>默认直出 exe，也能出 C</h3>
+      <p>原生后端直接产出 Windows x64 的 PE；要落到别的平台，同一份语义生成一个 C 文件，交给那边的 C 编译器。
+         编译器本体已经用自己编自己，逐字节不动点。</p>
+    </article>
+  </section>
+
+  <section id="bits" class="split">
+    <div>
+      <h2>按位访问是语言的一部分</h2>
+      <p>取一位、取一段位，读写皆可。读出来一律无符号（零扩展），写回去只改指定位——
+         寄存器字段读写不用再自己算掩码。</p>
+      <p class="muted">位段两端得是编译期常量；取单一位可以用变量下标。</p>
+    </div>
+    <pre><code><span class="k">fn</span> <span class="f">main</span>() {
+    <span class="c">// 寄存器布局：mode[15:13] | gain[12:8] | offset[7:0]</span>
+    <span class="k">let mut</span> reg: u16 = <span class="n">0xB1C8</span>;
+
+    println(<span class="s">"{}"</span>, reg[<span class="n">15</span>:<span class="n">13</span>]);  <span class="c">// 5      ← 一次拿一个字段</span>
+    reg[<span class="n">12</span>:<span class="n">8</span>] = <span class="n">3</span>;              <span class="c">// 只改这 5 位</span>
+    println(<span class="s">"{}"</span>, reg);         <span class="c">// 41928（0xA3C8），其余位没动</span>
+}</code></pre>
+  </section>
+
+  <section id="start" class="split">
+    <div>
+      <h2>三十秒上手</h2>
+      <p>仓库里带着编译好的编译器，解压就能用，<strong>不需要安装任何东西</strong>。</p>
+      <p class="muted">编译器不会自己建 <code>build\</code> 目录，产物也不放在源文件旁边——落在<strong>当前目录</strong>的
+         <code>build\</code> 下，所以请在仓库根目录运行。公开仓带了一个空占位 <code>build\.gitkeep</code>。</p>
+    </div>
+    <pre><code><span class="c">:: 编译并运行</span>
+bin\yan.exe run examples\hello.yan
+
+<span class="c">:: 产出 build\fib.exe</span>
+bin\yan.exe build examples\fib.yan
+
+<span class="c">:: 只做前端检查</span>
+bin\yan.exe check examples\arith.yan</code></pre>
+  </section>
+
+  <section class="code-hero">
+    <pre><code><span class="k">fn</span> <span class="f">fib</span>(n: i32) -&gt; i32 {
+    <span class="k">if</span> (n &lt; <span class="n">2</span>) { n } <span class="k">else</span> { fib(n - <span class="n">1</span>) + fib(n - <span class="n">2</span>) }
+}
+
+<span class="k">fn</span> <span class="f">main</span>() {
+    <span class="k">let</span> nums = [<span class="n">4</span>, <span class="n">8</span>, <span class="n">15</span>, <span class="n">16</span>, <span class="n">23</span>, <span class="n">42</span>];
+    <span class="k">let mut</span> sum = <span class="n">0</span>;
+    <span class="k">for</span> (x <span class="k">in</span> nums) { sum += x; }
+    println(<span class="s">"fib(20) = {}, sum = {}"</span>, fib(<span class="n">20</span>), sum);
+}</code></pre>
+  </section>
+
+  <section id="status" class="status">
+    <h2>现在到哪了</h2>
+    <ul>
+      <li><b>语言</b>：整数 / bool / 浮点 / 数组 / 引用 / 位访问 / <code>comptime</code> / struct / enum+match /
+          <code>Vec</code> <code>Box</code> <code>String</code> / <code>Option</code> <code>Result</code> / 元组 /
+          借用检查 / RAII / 文件 IO / 多文件</li>
+      <li><b>后端</b>：原生（默认）直接产 PE，已能编译编译器自己（自举逐字节不动点）；C 后端保留给交叉编译</li>
+      <li><b>原生后端还差一步</b>：<code>HashMap</code>、含引用的 struct 的部分字段操作目前只有 C 后端能发射
+          （加 <code>--backend=c</code>；前端是同一份，语法本身合法）</li>
+      <li><b>还没做</b>：<code>impl</code> 方法 / <code>trait</code> / 用户泛型 / 切片 <code>&amp;[T]</code> / <code>?</code> / 任意位宽整数</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <img src="assets/yan-logo.svg" alt="" width="26" height="26">
+  <span>砚 Yan · <a href="https://github.com/yan-lang-org/yan-lang">yan-lang</a> ·
+  <a href="https://github.com/yan-lang-org/yan-lang/blob/main/docs/SPEC.md">规范</a> ·
+  <a href="https://github.com/yan-lang-org/yan-lang/blob/main/docs/TUTORIAL.md">教程</a></span>
+</footer>
+
+</body>
+</html>
